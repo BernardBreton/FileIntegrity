@@ -32,8 +32,11 @@ np.set_printoptions(linewidth=200)
 ####
 data = read_csv(filename, header=0)
 fileDates =data['date']           #store dates
+fileTypes = data['type']          #store Types
 data= data.drop('date',axis=1)    # remove date column
+data = data.drop ('type', axis =1) # remove type column
 fileCols  = data.columns          # grab col names for re-insersion after normalization
+
 print ("columns are: ",fileCols)
 print ("raw  data....")
 print(data)
@@ -71,7 +74,7 @@ import matplotlib.font_manager
 from sklearn import svm
 
 
-classGamma =.001
+classGamma =.1
 classNu = 0.1
 
 frontier_offset =3
@@ -126,5 +129,11 @@ print('--')
 testData.plot(kind='density', subplots=True, sharex=False,layout=(3,4),)
 pyplot.show()
 
+
+y_pred_train = clf.predict(testData)
+
+prediction= list(zip(fileDates,y_pred_train ))
+for x in prediction:
+    print (x)
 #'''
 print(__doc__)

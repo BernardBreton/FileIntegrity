@@ -10,7 +10,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.font_manager
 import sklearn
-#from sklearn import svm
+from sklearn.model_selection import train_test_split
+from sklearn import svm
+
 print ("Environment scan...")
 
 # Check the versions of libraries
@@ -74,9 +76,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.font_manager
 from sklearn import svm
-
-
-classGamma =.2
+X_train, X_test = train_test_split(data,  test_size=.33, random_state=4)  #split data into train and test data  (66% train data)
+classGamma =.1
 classNu = 0.1
 
 frontier_offset =3
@@ -85,14 +86,11 @@ frontier_offset =3
 # fit the model
 print("-> Machine Training  starting  (using Non-linear SVM Novelty classfier)")
 clf = svm.OneClassSVM(nu=classNu, kernel="rbf", gamma=classGamma)
-clf.fit(data[:27])
-# model.fit(X, y)
-# model.score(X, y)
-#Predict Output
+clf.fit(X_train)
 
-y_pred_train = clf.predict(data[:27])
 
-prediction= list(zip(fileDates,y_pred_train ))
+x_pred_train = clf.predict(X_train)
+prediction= list(zip(fileDates,x_pred_train))
 for x in prediction:
     if x[1] == -1:
         print ( x[0], " file details are  different enough  from the other files that  will not be used as part of the training set "  )
@@ -100,11 +98,14 @@ for x in prediction:
         print(x[0], " ok ")
 
 print ("Machine has been trained..  \n\n\n\ ")
+
+result = clf.score_samples(X_test)
+print (" score->>>> ", result)
 print (" test data : ")
 print (data[28:])
 
 y_pred_test = clf.predict(data[28:])
-n_error_train = y_pred_train[y_pred_train == -1].size
+n_error_train = x_pred_train[x_pred_train == -1].size
 n_error_test = y_pred_test[y_pred_test == -1].size
 
 print ("n_error_train",n_error_train)
