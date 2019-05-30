@@ -33,10 +33,10 @@ filename = 'samplefile.csv'
 np.set_printoptions(linewidth=200)
 ####
 data = read_csv(filename, header=0)
-fileDates =data['date']           #store dates
+fileDates = data['date']           #store dates
 fileTypes = data['type']          #store Types
-data= data.drop('date',axis=1)    # remove date column
-data = data.drop ('type', axis =1) # remove type column
+data=       data.drop('date',axis=1)    # remove date column
+data =      data.drop ('type', axis =1) # remove type column
 fileCols  = data.columns          # grab col names for re-insersion after normalization
 
 print ("columns are: ",fileCols)
@@ -63,9 +63,9 @@ print(data)
 print('--')
 #scatter_matrix(data)
 
-#data[:27].plot(kind='density', subplots=True, sharex=False,layout=(3,4),)
-
-#data[28:].plot(kind='density', subplots=True, sharex=False,layout=(3,4),)
+data[:27].plot(kind='density', subplots=True, sharex=False,layout=(3,4),)
+#pyplot.show()
+print (data[28:])
 pyplot.show()
 #data.plot(kind='box', subplots=True, layout=(3,4), sharex=False, sharey=False)
 #pyplot.show()
@@ -88,12 +88,12 @@ print("-> Machine Training  starting  (using Non-linear SVM Novelty classfier)")
 clf = svm.OneClassSVM(nu=classNu, kernel="rbf", gamma=classGamma)
 clf.fit(X_train)
 
-
+#print (x)[for x in clf.get_params()]
 x_pred_train = clf.predict(X_train)
 prediction= list(zip(fileDates,x_pred_train))
 for x in prediction:
     if x[1] == -1:
-        print ( x[0], " file details are  different enough  from the other files that  will not be used as part of the training set "  )
+        print ( x[0], " File details are different enough from the other files that  will not be used as part of the training set "  )
     else:
         print(x[0], " ok ")
 
@@ -101,15 +101,18 @@ print ("Machine has been trained..  \n\n\n\ ")
 
 result = clf.score_samples(X_test)
 print (" score->>>> ", result)
-print (" test data : ")
-print (data[28:])
 
-y_pred_test = clf.predict(data[28:])
+
+y_pred_test = clf.predict(data[28:])    #evaluate production files
 n_error_train = x_pred_train[x_pred_train == -1].size
 n_error_test = y_pred_test[y_pred_test == -1].size
-
 print ("n_error_train",n_error_train)
 print ("n_error_test",n_error_test)
+
+
+result = clf.score_samples(data[28:])
+print (" production score->>>> ", result)
+
 print (fileDates[28])
 for x in y_pred_test:
     if x == -1:
